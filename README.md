@@ -1,6 +1,6 @@
-# Projeto Amaras
+# Projeto Amara
 
-A Amaras é uma plataforma descentralizada que conecta doadores a crianças em situação de vulnerabilidade, garantindo que as doações sejam gerenciadas de forma transparente e segura através da tecnologia blockchain.
+A Amara é uma plataforma descentralizada que conecta doadores a crianças em situação de vulnerabilidade, garantindo que as doações sejam gerenciadas de forma transparente e segura através da tecnologia blockchain.
 
 ## Funcionalidades Atuais
 

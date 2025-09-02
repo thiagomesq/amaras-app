@@ -1,26 +1,10 @@
 import { useState } from 'react';
-import { createPublicClient, createWalletClient, http, Hex, decodeFunctionData } from 'viem';
-import { privateKeyToAccount } from 'viem/accounts';
+import { createPublicClient, http, decodeFunctionData } from 'viem';
 import { polygonAmoy } from 'viem/chains';
 import { ENTITY_MANAGER_ADDRESS, ENTITY_MANAGER_ABI } from '@/lib/constants';
 
-// Validação da chave privada (deve estar em um arquivo .env.local)
-const privateKey = process.env.NEXT_PUBLIC_PRIVATE_KEY as Hex;
-if (!privateKey) {
-  throw new Error('A chave privada não foi encontrada em .env.local. Por favor, defina NEXT_PUBLIC_PRIVATE_KEY.');
-}
-
-// Criação da conta local
-const account = privateKeyToAccount(privateKey);
-
-// Configuração dos clientes Viem
+// Configuração do cliente PÚBLICO Viem (seguro para o frontend)
 const publicClient = createPublicClient({
-  chain: polygonAmoy,
-  transport: http(),
-});
-
-const walletClient = createWalletClient({
-  account,
   chain: polygonAmoy,
   transport: http(),
 });
@@ -33,18 +17,22 @@ export const useEntityManager = () => {
     setIsPending(true);
     setError(null);
     try {
-      const hash = await walletClient.writeContract({
-        address: ENTITY_MANAGER_ADDRESS,
-        abi: ENTITY_MANAGER_ABI.abi,
-        functionName: 'registerEntity',
-        args: [name, metadata, entityHash],
-        account, // Especifica a conta para assinar a transação
+      const response = await fetch('/api/register-entity', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, metadata, entityHash }),
       });
 
-      // Aguarda a confirmação da transação
-      const receipt = await publicClient.waitForTransactionReceipt({ hash });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Falha ao registrar a entidade.');
+      }
+
       setIsPending(false);
-      return receipt;
+      return data.receipt;
     } catch (err) {
       console.error('Erro ao registrar entidade:', err);
       setError(err as Error);
@@ -97,5 +85,5 @@ export const useEntityManager = () => {
     }
   };
 
-  return { registerEntity, isPending, error };
+  return { registerEntity, getRecentEntities, isPending, error };
 };
