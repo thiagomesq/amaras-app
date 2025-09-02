@@ -16,13 +16,13 @@ const account = privateKeyToAccount(privateKey);
 // Configuração dos clientes Viem
 const publicClient = createPublicClient({
   chain: polygonAmoy,
-  transport: http('https://polygon-amoy.g.alchemy.com/v2/6z5vaZ6hl8V_B-rPm_jqm'),
+  transport: http(),
 });
 
 const walletClient = createWalletClient({
   account,
   chain: polygonAmoy,
-  transport: http('https://polygon-amoy.g.alchemy.com/v2/6z5vaZ6hl8V_B-rPm_jqm'),
+  transport: http(),
 });
 
 export const useEntityManager = () => {
